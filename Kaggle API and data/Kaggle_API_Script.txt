@@ -13,5 +13,5 @@ kaggle datasets list -s goodreads
 kaggle datasets files bahramjannesarr/goodreads-book-datasets-10m
 
 # Download dataset files
-kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f book1-100k.csv -p Kaggle_csvData
-kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f book100k-200k.csv -p Kaggle_csvData
+kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f book1-100k.csv --unzip -p Kaggle_csvData 
+kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f book100k-200k.csv --unzip -p Kaggle_csvData 
