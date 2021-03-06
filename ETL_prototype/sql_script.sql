@@ -1,4 +1,5 @@
 --Create the books_db
+DROP DATABASE IF EXISTS books_db;
 CREATE DATABASE books_db;
 
 --Drop any tables if they exist
@@ -39,7 +40,7 @@ CREATE TABLE author (
   author_name varchar NOT NULL PRIMARY KEY,
 );
 --Create the ISBN_author table
-CREATE TABLE author (
+CREATE TABLE isbn_author (
   isbn_no int NOT NULL PRIMARY KEY,
   author_id int NOT NULL,
   FOREIGN KEY (author_id) REFERENCES author (author_id),
@@ -56,4 +57,5 @@ CREATE TABLE google_books (
   print_type_id int NOT NULL,
   retail_price money NOT NULL,
   FOREIGN KEY (print_type_id) REFERENCES print_type (print_type_id)
+  FOREIGN KEY (isbn_no) REFERENCES book_titles (ISBN)
 );
