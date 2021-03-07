@@ -11,6 +11,7 @@ directory=`pwd`
 dataDirName="Kaggle_csvData"
 kaggleConfigFile="${directory}/kaggle.json"
 pythonConfigFile="${directory}/config.py"
+booksTxtFile="${directory}/books.txt"
 pgSchemaSqlFile="${directory}/sql_script.sql"
 dataDir=${directory}/${dataDirName}
 export KAGGLE_CONFIG_DIR=${directory}
@@ -27,7 +28,7 @@ echo "***************************************************************"
 echo "** Creating DIR's and config files..."
 echo "***************************************************************"
 echo "** Ensuring kaggle module is installed..."
-pip install -q kaggle
+#pip install -q kaggle
 
 echo "** Creating configuration files if not existing..."
 # create kaggle.json config file
@@ -35,6 +36,9 @@ touch "${kaggleConfigFile}"
 
 # create config.py config file
 touch "${pythonConfigFile}"
+
+# create books.txt file
+touch "${booksTxtFile}"
 
 # Create a directory to save the csv data
 echo "** Creating data directory..."
@@ -102,8 +106,22 @@ getBooks(){
     # List files for the dataset
     echo ""
     echo " Below are the list of book CSVs: "
-    kaggle datasets files bahramjannesarr/goodreads-book-datasets-10m
-    #echo ${varFiles}
+    kaggle datasets files bahramjannesarr/goodreads-book-datasets-10m > ${booksTxtFile}
+    sed -i '1,2d' ${booksTxtFile}
+    sort -o ${booksTxtFile} ${booksTxtFile}
+    booksList=($(cat ${booksTxtFile} | awk '{print $1}'))
+    # limit=5
+    # ctr=1
+    # for i in "${!booksList[@]}"; do 
+    #     printf "${booksList[$i]}"
+    #     if [ $ctr -eq $limit ]
+    #     then
+    #         break;
+    #     else
+    #         ctr=$ctr + 1
+    #     fi
+
+    # done
 
     # let user pick how many books to pull
 
@@ -112,12 +130,12 @@ getBooks(){
     kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f book100k-200k.csv -p Kaggle_csvData --unzip
 
     # Extract data
-    unzip "${dataDir}/*.zip" -d "${dataDir}"
+    unzip "${dataDir}/*.zip" -d "${dataDir}" 2> /dev/null
     # Delete Zip files
-    rm -f ${dataDir}/*.zip
+    rm -f ${dataDir}/*.zip  2> /dev/null
 
     echo "** Completed downloading books CSVs, below are the files downloaded..."
-    ls -p -1 ./Kaggle_csvData/*.csv
+    ls -p -1 ./Kaggle_csvData
 } # end of getBooks Function
 
 ########################################################################
