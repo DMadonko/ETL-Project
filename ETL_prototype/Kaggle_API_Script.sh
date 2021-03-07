@@ -28,7 +28,7 @@ echo "***************************************************************"
 echo "** Creating DIR's and config files..."
 echo "***************************************************************"
 echo "** Ensuring kaggle module is installed..."
-#pip install -q kaggle
+pip install -q kaggle
 
 echo "** Creating configuration files if not existing..."
 # create kaggle.json config file
@@ -105,36 +105,52 @@ getBooks(){
 
     # List files for the dataset
     echo ""
-    echo " Below are the list of book CSVs: "
+    echo "** Below are the list of CSVs from Kaggle: "
     kaggle datasets files bahramjannesarr/goodreads-book-datasets-10m > ${booksTxtFile}
     sed -i '1,2d' ${booksTxtFile}
     sort -o ${booksTxtFile} ${booksTxtFile}
     booksList=($(cat ${booksTxtFile} | awk '{print $1}'))
-    # limit=5
-    # ctr=1
-    # for i in "${!booksList[@]}"; do 
-    #     printf "${booksList[$i]}"
-    #     if [ $ctr -eq $limit ]
-    #     then
-    #         break;
-    #     else
-    #         ctr=$ctr + 1
-    #     fi
+    printf '%s\n' "${booksList[@]}"
+    numCSVs="${#booksList[@]}"
+    echo ""
 
-    # done
+    # initialise CSV limit
+    limit="5"
 
     # let user pick how many books to pull
+    while :; do
+    read -p "** Please enter the quantity of CSV files that you would like to download (1-${numCSVs}): " number
+    [[ $number =~ ^[0-9]+$ ]] || { echo "Enter a valid number"; continue; }
+    if ((number >= 1 && number <= ${numCSVs})); then
+        limit=${number}
+        echo "** You have chosen to download ${number} CSV files..."
+        break;
+    else
+        echo "** number out of range, try again..."
+    fi
+    done
+
+    # initialise counter
+    ctr="1"
 
     # Download dataset files
-    kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f book1-100k.csv -p Kaggle_csvData --unzip  
-    kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f book100k-200k.csv -p Kaggle_csvData --unzip
+    printf "\n** Downloading CSV files... \n"
+    for i in "${!booksList[@]}"; do 
+        kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f "${booksList[$i]}"  -p ${dataDirName}
+        if [ ${ctr} -eq ${limit} ]
+        then
+            break;
+        else
+            ctr=$[$ctr+1]
+        fi
+    done
 
     # Extract data
     unzip "${dataDir}/*.zip" -d "${dataDir}" 2> /dev/null
     # Delete Zip files
     rm -f ${dataDir}/*.zip  2> /dev/null
 
-    echo "** Completed downloading books CSVs, below are the files downloaded..."
+    printf "\n** Completed downloading books CSVs, below are the files downloaded..."
     ls -p -1 ./Kaggle_csvData
 } # end of getBooks Function
 
@@ -143,11 +159,19 @@ getBooks(){
 ########################################################################
 # set the PGUSER and PGPASSWORD environment variable
 buildDB(){
+    echo ""
     echo "***************************************************************"
     echo " ** Building the database and Schema..."
     echo "***************************************************************"
-    export PGUSER=${pgadminUser}
-    export PGPASSWORD=${pgadminPassword}
+    # add postgre binaries path to $PATH
+    export PATH="${PATH}:/C/Program Files/PostgreSQL/11/bin"
+    export PGUSER=`grep "pg_user" ${pythonConfigFile} | cut -d '"' -f2` #pull from config if blank
+    export PGPASSWORD=`grep "pg_pass" ${pythonConfigFile} | cut -d '"' -f2` #pull from config if blank
+    # drop create DB
+    dropdb --if-exists books_db
+    createdb books_db
+    # run SQL file
+    psql -d books_db -f ${pgSchemaSqlFile}
 } # End of buildDB function
 
 ########################################################################
@@ -156,6 +180,7 @@ buildDB(){
 
 
 # ask user if they want to configure credentials
+echo ""
 echo "***************************************************************"
 echo "** Acquiring Credentials and configuration from user..."
 echo "***************************************************************"
@@ -169,7 +194,9 @@ while true; do
     esac
 done
 
+# pull book data
 getBooks
+# build the database
 buildDB
 
 echo "helloWorld"
