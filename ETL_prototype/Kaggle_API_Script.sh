@@ -4,7 +4,7 @@
 # initialise local and environment variables
 ########################################################################
 #get root directory
-echo "***************************************************************"
+printf "\n\n\n***************************************************************\n"
 echo "** WELCOME TO ETL PROJECT!!!! INITIALISING..."
 echo "***************************************************************"
 directory=`pwd`
@@ -16,7 +16,7 @@ pgSchemaSqlFile="${directory}/sql_script.sql"
 dataDir=${directory}/${dataDirName}
 export KAGGLE_CONFIG_DIR=${directory}
 
-echo "** Kaggle configuration file path set to \"${kaggleConfigFile}\""
+echo "** Kaggle configuration file path set to \"${KAGGLE_CONFIG_DIR}\""
 echo "** Python configuration file path set to \"${pythonConfigFile}\""
 echo "** Data directory path set to \"${dataDir}\""
 
@@ -24,7 +24,7 @@ echo "** Data directory path set to \"${dataDir}\""
 # Create DIR's and config files
 ########################################################################
 # install kaggle Python package
-echo "***************************************************************"
+printf "\n***************************************************************\n"
 echo "** Creating DIR's and config files..."
 echo "***************************************************************"
 echo "** Ensuring kaggle module is installed..."
@@ -44,8 +44,7 @@ touch "${booksTxtFile}"
 echo "** Creating data directory..."
 if [ -d "${dataDir}" ] 
 then
-    echo "   ${dataDir} already exists, clearing data directory instead..."
-    rm -f ${dataDir}/*.*
+    echo "   ${dataDir} already exists..."
 else
     mkdir ${dataDir}
 fi
@@ -96,8 +95,7 @@ getCredentials(){
 # Execute DB and Schema creation SQL file
 ########################################################################
 getBooks(){
-    echo ""
-    echo "***************************************************************"
+    printf "\n***************************************************************\n"
     echo "** Pulling books data from Kaggle API..."
     echo "***************************************************************"
     # List datasets matching the search term
@@ -112,6 +110,7 @@ getBooks(){
     booksList=($(cat ${booksTxtFile} | awk '{print $1}'))
     printf '%s\n' "${booksList[@]}"
     numCSVs="${#booksList[@]}"
+    rm -f ${booksTxtFile}
     echo ""
 
     # initialise CSV limit
@@ -135,6 +134,9 @@ getBooks(){
 
     # Download dataset files
     printf "\n** Downloading CSV files... \n"
+    # Clear directory before downloading CSV files  
+    rm -f ${dataDir}/*.*
+    # Download CSV files
     for i in "${!booksList[@]}"; do 
         kaggle datasets download bahramjannesarr/goodreads-book-datasets-10m -f "${booksList[$i]}"  -p ${dataDirName}
         if [ ${ctr} -eq ${limit} ]
@@ -146,25 +148,28 @@ getBooks(){
     done
 
     # Extract data
+    printf "\n** Extracting CSV files...\n"
     unzip "${dataDir}/*.zip" -d "${dataDir}" 2> /dev/null
     # Delete Zip files
     rm -f ${dataDir}/*.zip  2> /dev/null
 
-    printf "\n** Completed downloading books CSVs, below are the files downloaded..."
+    printf "\n** Completed downloading books CSVs, below are the files downloaded...\n"
     ls -p -1 ./Kaggle_csvData
 } # end of getBooks Function
 
 ########################################################################
 # Execute DB and Schema creation SQL file
 ########################################################################
-# set the PGUSER and PGPASSWORD environment variable
 buildDB(){
-    echo ""
-    echo "***************************************************************"
-    echo " ** Building the database and Schema..."
+    printf "\n***************************************************************\n"
+    echo "** Building the database and Schema..."
+    echo "** Note: If this section fails to run, please add the  PostgreSQL"
+    echo "         binary location (/bin) to your PATH environment variable"
+    echo "         (Windows users)..."
     echo "***************************************************************"
     # add postgre binaries path to $PATH
     export PATH="${PATH}:/C/Program Files/PostgreSQL/11/bin"
+    # set the PGUSER and PGPASSWORD environment variable
     export PGUSER=`grep "pg_user" ${pythonConfigFile} | cut -d '"' -f2` #pull from config if blank
     export PGPASSWORD=`grep "pg_pass" ${pythonConfigFile} | cut -d '"' -f2` #pull from config if blank
     # drop create DB
@@ -172,19 +177,33 @@ buildDB(){
     createdb books_db
     # run SQL file
     psql -d books_db -f ${pgSchemaSqlFile}
+    printf "\n** Database Schema successfully built!!!\n"
 } # End of buildDB function
 
 ########################################################################
-# Execute python Cleanup script
+# Execute python Cleanup script and DB load
 ########################################################################
+transformLoad(){
+    printf "\n***************************************************************\n"
+    echo "** Executing transformation and load Python Script..."
+    echo "***************************************************************"
+    # execute python ETL script
+    python transform_and_load.py
+    printf "\n** Data successfully transformed and loaded to the database!!!\n"
+} # End of buildDB function
 
-
+########################################################################
+# ************************  MAIN FUNCTION CALL  ************************
+########################################################################
 # ask user if they want to configure credentials
 echo ""
 echo "***************************************************************"
 echo "** Acquiring Credentials and configuration from user..."
 echo "***************************************************************"
-echo "** (Note: you can skip this if you have previously entered credentials)"
+echo "** (Note: you can skip this if you have previously entered correct"
+echo "          credentials otherwise please enter \"Y\" if running  for"
+echo "          the first time or if there is an issue with the existing"
+echo "          credentials..."
 while true; do
     read -p "** Do you want to enter credentials and configuration parameters? [Y/N]:" yn
     case $yn in
@@ -198,5 +217,17 @@ done
 getBooks
 # build the database
 buildDB
+# call the python transformation logic
+transformLoad
 
-echo "helloWorld"
+# ETL process completed
+echo ""
+echo "***************************************************************"
+echo "** ETL process completed!!! Please run bookData_analysis.ipynb"
+echo "   to show the analysis plots for the loaded data..."
+echo "   ETL PROJECT TEAM 4:"
+echo "     DIANA MADONKO"
+echo "     RAPHAEL SERRANO"
+echo "     SWOBABIKA JENA"
+echo "     THOMAS MAINA"
+echo "***************************************************************"
