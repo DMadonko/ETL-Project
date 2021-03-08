@@ -1,6 +1,4 @@
-#########################################################################
 # ETL-Project
-#########################################################################
 ### ETL Project Proposal
 
 Team Members: 
@@ -70,9 +68,8 @@ Potential limitations
 •	How can you control these potential issues?
 ~ We will explore different sources of data.
 
-#########################################################################
+
 # Navigating Folders
-#########################################################################
 ### 01-Documentation
 Contains the following files:
 * **"ETL Project Proposal - Team 4.docx"** - Project proposal document
@@ -94,6 +91,31 @@ Contains the following files:
 
 ### 03-Prototype_Scripts
 Contains files used for prototyping
+
+### 04-Images
+Contains images for the readme file
+
+# Running the Script
+## Prerequisites
+* Ensure that Kaggle API installed although the ETL_automation_Script.sh will install this automatically.
+* Ensure that psycopg is installed
+* Ensure that the path to posgres binaries are added to the PATH environment variable (the script will add the default installation path)
+* Ensure that the following credentials are present
+    - Kaggle API user name
+    - Kaggle API key
+    - Google Cloud API Key
+    - Postgres user name and password
+
+## Instructions
+1. After cloning the repository, go to **02-ETL_Scripts** sub-directory.
+2. Execute **ETL_automation_Script.sh**
+    ![Revenue](04-Images/screen1.png)
+    * It will create a kaggle.json configuration file and config.py file where it will store credentials
+    * It will ask the user if they wish to enter their credentials - if it is the first time running the script enter **"Y"**
+    ![Revenue](04-Images/screen2.png)
+    * It will ask the user for credentials and maximum number of API calls. **NOTE: The default maximum API call for Google Books is 1000 per day**
+3. Enter the quantity of books to download
+    ![Revenue](04-Images/screen3.png)
 
 
 
