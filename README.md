@@ -109,14 +109,32 @@ Contains images for the readme file
 ## Instructions
 1. After cloning the repository, go to **02-ETL_Scripts** sub-directory.
 2. Execute **ETL_automation_Script.sh**
+
     ![Revenue](04-Images/screen1.png)
+    
     * It will create a kaggle.json configuration file and config.py file where it will store credentials
     * It will ask the user if they wish to enter their credentials - if it is the first time running the script enter **"Y"**
+    
     ![Revenue](04-Images/screen2.png)
+    
     * It will ask the user for credentials and maximum number of API calls. **NOTE: The default maximum API call for Google Books is 1000 per day**
+    
 3. Enter the quantity of books to download
-    ![Revenue](04-Images/screen3.png)
 
+    ![Revenue](04-Images/screen3.png)
+    
+4. The API call will pull CSV files and store them on **Kaggle_csvData** subfolder
+
+    ![Revenue](04-Images/screen4.png)
+    
+5. The script will proceed to create a database and tables in it by automatically running **"sql_script.sql"** - the script will also add the default binary path for postgres but if issues occur in this part ensure that the postgres binary path is in the $PATH environment variable.
+
+    ![Revenue](04-Images/screen5.png)
+    
+6. After creating tables it will proceed to load the data into dataframes, cleanse and transform the data and load it in the database by automatically running **transform_and_load.py**
+7. Upon completion, the script will show the count of records in each database table
+
+    ![Revenue](04-Images/screen6.png)
 
 
 
