@@ -1,5 +1,7 @@
+#########################################################################
 # ETL-Project
-ETL Project Proposal
+#########################################################################
+### ETL Project Proposal
 
 Team Members: 
 1.	Raphael Serrano
@@ -7,13 +9,12 @@ Team Members:
 3.	Thomas Maina
 4.	Diana Madonko
 
-Project overview 
+### Project overview 
 
 Our question of interest is to explore published books around the world and related information. This data will be able to assist people with book choices as it would provide more information on ratings, affordability and other areas that influence their choices.
 
 
-EXTRACT - Proposed data sources
-
+### EXTRACT - Proposed data sources
 •	Where is the data located?
 1. Kaggle
 2. Google books
@@ -21,7 +22,7 @@ EXTRACT - Proposed data sources
 1. csv
 2. JSON
 •	How will you get this data? (e.g. API, scraped data, download data)
-1. API 
+1. API (downloading CSV files)
 2. API
 •	Our data will provide the following information:
 ~ ISBN
@@ -35,11 +36,10 @@ EXTRACT - Proposed data sources
 ~ Rating
 ~ Country
 ~ Retail Price
-~ Currency Code
 ~ Print Type
 
 
-TRANSFORM - Proposed clean-up and analysis
+### TRANSFORM - Proposed clean-up and analysis
 •	What are the transformations you will apply to the data? (e.g. filtering, aggregation, derived columns)
 Filtering and derived columns
 •	What steps will you take to clean the data and ensure its validity (e.g. messy data, duplicated data, incorrectly formatted data)
@@ -54,9 +54,7 @@ Jupyter Notebook
 We have chosen these transformations as they best suit the data we have selected.
 
 
-
-
-LOAD - Data storage
+### LOAD - Data storage
 •	What type of database (relational, document) will you store the data?
 Relational database
 •	Why did you choose this database over another database?
@@ -72,6 +70,35 @@ Potential limitations
 •	How can you control these potential issues?
 ~ We will explore different sources of data.
 
-
-
 #########################################################################
+# Navigating Folders
+#########################################################################
+### 01-Documentation
+Contains the following files:
+* **"ETL Project Proposal - Team 4.docx"** - Project proposal document
+* **"ETL Project Report.docx"** - Document with details of the project and inferences gathered from the project
+
+### 02-ETL_Scripts
+Contains the following files:
+* **"ETL_automation_Script.sh"** - The script acts as a wrapper script for both **sql_script.sql** file and **transform_and_load.py** file. It automates the ETL sequence: 
+    - Setting up enfironment variables
+    - Acquiring user credentials and setting API call limits
+    - Creating necessary files and directories
+    - Downloading CSV files from KAggle API call
+    - Creating the database and tables
+    - Loading and clensing data using DataFrames
+    - Uploading data to the Database
+* **sql_script.sql** - Contains the SQL code to create tables, called by **"ETL_automation_Script.sh"**
+* **transform_and_load.py** - Contains the python script to load CSVs to dataframes, cleanse the data and load the data to the DB
+* **bookData_analysis.ipynb** - Contains the python scripts and visualisation for analysing data
+
+### 03-Prototype_Scripts
+Contains files used for prototyping
+
+
+
+
+
+
+
+
