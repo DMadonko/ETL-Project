@@ -1,0 +1,8 @@
+*checkpoint*
+*__pycache__*
+*config.py*
+*kaggle.json*
+*.csv*
+*Kaggle_csvData*
+*.ipynb_checkpoints*
+*books.txt*
