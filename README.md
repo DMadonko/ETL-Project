@@ -100,7 +100,7 @@ Contains images for the readme file
 * Ensure that Kaggle API installed although the ETL_automation_Script.sh will install this automatically.
 * Ensure that psycopg is installed
 * Ensure that the path to posgres binaries are added to the PATH environment variable (the script will add the default installation path)
-* Ensure that the following credentials are present
+* Ensure that the following credentials are on hand
     - Kaggle API user name
     - Kaggle API key
     - Google Cloud API Key
@@ -135,7 +135,14 @@ Contains images for the readme file
 7. Upon completion, the script will show the count of records in each database table
 
     ![Revenue](04-Images/screen6.png)
+    
+8. If data looks good, run a jupyter notebook session and open **bookData_analysis.ipynb** which will contain some analysis on the gathered data.
 
+![Revenue](04-Images/screen9.png)
+
+![Revenue](04-Images/screen10.png)
+
+![Revenue](04-Images/screen11.png)
 
 
 
